@@ -1,32 +1,33 @@
 extends KinematicBody2D
 
-export var speed : int = 400 #variável da velocidade, o export coloca no menu
-export var jump_speed : int = -200 #velocidade do pulo
-export var gravity : int = 200 #gravidade
-var velocity = Vector2()
+export (int) var run_speed = 300
+export (int) var jump_speed = -400
+export (int) var gravity = 1200
 
 onready var sprite = get_node("Sprite")
 
-func get_input(delta):
+var velocity = Vector2()
+var jumping = false
+
+func get_input():
 	velocity.x = 0
-	if Input.is_action_pressed("move_right"):
-		velocity.x += speed
+	var right = Input.is_action_pressed("move_right")
+	var left = Input.is_action_pressed("move_left")
+	var jump = Input.is_action_just_pressed("jump")
+
+	if jump and is_on_floor():
+		jumping = true
+		velocity.y = jump_speed
+	if right:
+		velocity.x += run_speed
 		sprite.flip_h = false
-	if Input.is_action_pressed("move_left"):
-		velocity.x -= speed
+	if left:
+		velocity.x -= run_speed
 		sprite.flip_h = true
-	if Input.is_action_pressed("jump"):
-		if (is_on_floor()):
-			velocity.y += jump_speed
-	
-	#gravity 
-	velocity.y += gravity * delta 
-	velocity = move_and_slide(velocity, Vector2.UP)
-	
 
-		
-
-
-func _physics_process(delta): # executa tantas vezes por segundo
-	get_input(delta)
-
+func _physics_process(delta):
+	get_input()
+	velocity.y += gravity * delta
+	if jumping and is_on_floor():
+		jumping = false
+	velocity = move_and_slide(velocity, Vector2(0, -1))

@@ -367,6 +367,3 @@ current = true
 
 [node name="player" parent="." instance=ExtResource( 2 )]
 position = Vector2( -128, -55 )
-speed = 250
-jump_speed = -180
-gravity = 240
